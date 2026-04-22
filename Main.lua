@@ -54,3 +54,27 @@ Tabs.Automation:AddButton({
 
 
 Window:SelectTab(1) 
+
+local bypassSpeed = false
+local speedValue = 1 
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if bypassSpeed then
+        local char = game.Players.LocalPlayer.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChild("Humanoid")
+        
+        if root and hum and hum.MoveDirection.Magnitude > 0 then
+            root.CFrame = root.CFrame + (hum.MoveDirection * speedValue)
+        end
+    end
+end)
+
+
+Tab:AddToggle({
+	Name = "Bypass Speed (CFrame)",
+	Default = false,
+	Callback = function(Value)
+		bypassSpeed = Value
+	end    
+})
