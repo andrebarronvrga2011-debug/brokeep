@@ -1,60 +1,74 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- 1. CONFIGURACIÓN DE COLORES Y OBJETOS
+local Sersoft = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ToggleBtn = Instance.new("TextButton")
+local Title = Instance.new("TextLabel")
+local SpeedBtn = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
 
--- 1. CREAR VENTANA (Orion pone el botón de abrir/cerrar automáticamente)
-local Window = OrionLib:MakeWindow({
-    Name = "Sersoft Professional", 
-    HidePremium = false, 
-    SaveConfig = true, 
-    ConfigFolder = "SersoftData",
-    IntroText = "Sersoft Suite" -- Texto que sale al cargar
-})
+-- Parent a la GUI del jugador
+Sersoft.Name = "Sersoft_Minimal"
+Sersoft.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+Sersoft.ResetOnSpawn = false
 
--- 2. PESTAÑA PRINCIPAL
-local Tab = Window:MakeTab({
-	Name = "Principal",
-	Icon = "rbxassetid://4483345906",
-	PremiumOnly = false
-})
+-- 2. BOTÓN FLOTANTE (Para abrir/cerrar)
+ToggleBtn.Name = "Toggle"
+ToggleBtn.Parent = Sersoft
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleBtn.Position = UDim2.new(0.02, 0, 0.45, 0)
+ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
+ToggleBtn.Text = "S" -- Letra de Sersoft
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.TextSize = 20
+ToggleBtn.Font = Enum.Font.GothamBold
 
-Tab:AddSection({
-	Name = "Controles de Jugador"
-})
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 10)
+BtnCorner.Parent = ToggleBtn
 
--- Slider de Velocidad
-Tab:AddSlider({
-	Name = "Velocidad Sersoft",
-	Min = 16,
-	Max = 500,
-	Default = 16,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Speed",
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-	end    
-})
+-- 3. MARCO PRINCIPAL (Negro Puro)
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = Sersoft
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
+MainFrame.Size = UDim2.new(0, 200, 0, 150)
+MainFrame.Visible = false -- Empieza cerrado
+MainFrame.BorderSizePixel = 0
 
--- Botón para resetear todo
-Tab:AddButton({
-	Name = "Resetear Personaje",
-	Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.Health = 0
-	end    
-})
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.Parent = MainFrame
 
--- 3. PESTAÑA DE AJUSTES
-local ConfigTab = Window:MakeTab({
-	Name = "Ajustes",
-	Icon = "rbxassetid://4483345906",
-	PremiumOnly = false
-})
+-- Título
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "SERSOFT"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
 
-ConfigTab:AddButton({
-	Name = "Destruir HUD",
-	Callback = function()
-        OrionLib:Destroy()
-	end    
-})
+-- Botón de Velocidad (Dentro del marco)
+SpeedBtn.Parent = MainFrame
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SpeedBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
+SpeedBtn.Size = UDim2.new(0.8, 0, 0, 40)
+SpeedBtn.Font = Enum.Font.Gotham
+SpeedBtn.Text = "Velocidad: 100"
+SpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedBtn.TextSize = 14
 
--- ESTO ES LO MÁS IMPORTANTE: Inicializa la librería
-OrionLib:Init()
+local SpeedCorner = Instance.new("UICorner")
+SpeedCorner.Parent = SpeedBtn
+
+-- 4. LÓGICA (Abrir/Cerrar y Funciones)
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+SpeedBtn.MouseButton1Click:Connect(function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+end)
+
+-- Hacerlo movible (Draggable)
+MainFrame.Active = true
+MainFrame.Draggable = true
