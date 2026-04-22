@@ -19,7 +19,7 @@ local Tabs = {
 local bypassSpeed = false
 local speedValue = 1
 local killAura = false
-local spamAbilities = false
+local spamVFX = false
 local selectedKey = "2"
 
 Tabs.Main:AddSection("Movimiento")
@@ -40,22 +40,22 @@ Tabs.Main:AddToggle("Bypass", {
     Callback = function(Value) bypassSpeed = Value end
 })
 
-Tabs.Combat:AddSection("Ataque y Spam")
+Tabs.Combat:AddSection("Ataque y VFX Spam")
 
 Tabs.Combat:AddToggle("Killaura", {
-    Title = "Kill Aura (Rango Corto)",
+    Title = "Kill Aura (Hits)",
     Default = false,
     Callback = function(Value) killAura = Value end
 })
 
-Tabs.Combat:AddToggle("Spam", {
-    Title = "Spam Ability",
+Tabs.Combat:AddToggle("SpamVFX", {
+    Title = "Spam VFX Abilities",
     Default = false,
-    Callback = function(Value) spamAbilities = Value end
+    Callback = function(Value) spamVFX = Value end
 })
 
 Tabs.Combat:AddDropdown("Key", {
-    Title = "Tecla",
+    Title = "Tecla Habilidad",
     Values = {"1", "2", "3", "4", "E", "R", "F"},
     Default = "2",
     Callback = function(Value) selectedKey = Value end
@@ -111,7 +111,7 @@ end)
 
 task.spawn(function()
     local VIM = game:GetService("VirtualInputManager")
-    while task.wait(0.3) do
+    while task.wait(0.1) do
         if killAura then
             local char = game.Players.LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
@@ -119,7 +119,7 @@ task.spawn(function()
                     local tHum = v:FindFirstChildOfClass("Humanoid")
                     local tRoot = v:FindFirstChild("HumanoidRootPart")
                     if tHum and tRoot and v.Name ~= game.Players.LocalPlayer.Name and tHum.Health > 0 then
-                        if (char.HumanoidRootPart.Position - tRoot.Position).Magnitude <= 10 then
+                        if (char.HumanoidRootPart.Position - tRoot.Position).Magnitude <= 12 then
                             local tool = char:FindFirstChildOfClass("Tool")
                             if tool then tool:Activate() end
                         end
@@ -128,8 +128,20 @@ task.spawn(function()
             end
         end
         
-        if spamAbilities then
+        if spamVFX then
             VIM:SendKeyEvent(true, Enum.KeyCode[selectedKey], false, game)
+            
+            local restr = game:GetService("ReplicatedStorage")
+            local remotes = restr:FindFirstChild("Remotes") or restr:FindFirstChild("Events")
+            
+            if remotes then
+                for _, r in pairs(remotes:GetDescendants()) do
+                    if r:IsA("RemoteEvent") and (r.Name:find("VFX") or r.Name:find("Effect") or r.Name:find("Attack")) then
+                        r:FireServer()
+                    end
+                end
+            end
+            
             task.wait(0.05)
             VIM:SendKeyEvent(false, Enum.KeyCode[selectedKey], false, game)
         end
