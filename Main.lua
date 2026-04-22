@@ -11,62 +11,65 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.RightControl
 })
 
--- 2. CREACIÓN DEL BOTÓN FLOTANTE PERSONALIZADO
-local ScreenGui = Instance.new("ScreenGui")
-local ToggleButton = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner")
+-- 2. BOTÓN FLOTANTE "FORZADO" (Este no puede fallar)
+local function CreateMobileButton()
+    local ScreenGui = Instance.new("ScreenGui")
+    local Button = Instance.new("TextButton")
+    local UICorner = Instance.new("UICorner")
 
-ScreenGui.Name = "SersoftToggle"
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ResetOnSpawn = false
+    -- Propiedades del ScreenGui (Asegura que se vea sobre todo)
+    ScreenGui.Name = "Sersoft_Toggle_UI"
+    ScreenGui.Parent = game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.DisplayOrder = 999 -- Máxima prioridad visual
 
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(10, 10, 10) -- Negro puro
-ToggleButton.Position = UDim2.new(0.05, 0, 0.2, 0) -- Posición inicial
-ToggleButton.Size = UDim2.new(0, 50, 0, 50)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "S"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 24
-ToggleButton.Draggable = true -- Para que puedas mover el botón donde quieras
+    -- Propiedades del Botón
+    Button.Name = "SersoftBtn"
+    Button.Parent = ScreenGui
+    Button.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Negro Sersoft
+    Button.BorderSizePixel = 0
+    Button.Position = UDim2.new(0.05, 0, 0.15, 0) -- Aparece arriba a la izquierda
+    Button.Size = UDim2.new(0, 50, 0, 50)
+    Button.Font = Enum.Font.GothamBold
+    Button.Text = "S"
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 25
+    Button.Draggable = true -- Lo puedes mover con el mouse
+    Button.Active = true
 
-UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = ToggleButton
+    UICorner.CornerRadius = UDim.new(0, 15)
+    UICorner.Parent = Button
 
--- Lógica para abrir/cerrar
-ToggleButton.MouseButton1Click:Connect(function()
-    Window:Minimize() -- Esto alterna entre abierto y cerrado en Fluent
-end)
+    -- Lógica de apertura/cierre
+    Button.MouseButton1Click:Connect(function()
+        -- Fluent usa una función específica para alternar el menú
+        if game:GetService("CoreGui"):FindFirstChild("Fluent") then
+            game:GetService("CoreGui").Fluent.Enabled = not game:GetService("CoreGui").Fluent.Enabled
+        else
+            -- Si no está en CoreGui, buscamos en PlayerGui
+            local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("Fluent")
+            if gui then gui.Enabled = not gui.Enabled end
+        end
+    end)
+end
 
--- 3. PESTAÑAS (Estilo Speed Hub X)
+-- Ejecutamos la creación del botón
+CreateMobileButton()
+
+-- 3. PESTAÑAS Y FUNCIONES
 local Tabs = {
     Main = Window:AddTab({ Title = "Principal", Icon = "box" }),
     Settings = Window:AddTab({ Title = "Ajustes", Icon = "settings" })
 }
 
--- Contenido de la pestaña Principal
-Tabs.Main:AddSection("Movimiento")
-
-Tabs.Main:AddSlider("SpeedSlider", {
-    Title = "Velocidad",
-    Description = "Ajusta tu velocidad de caminado",
+Tabs.Main:AddSlider("Speed", {
+    Title = "Velocidad Sersoft",
     Default = 16,
     Min = 16,
-    Max = 250,
+    Max = 300,
     Rounding = 0,
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
 
-Tabs.Main:AddButton({
-    Title = "Resetear Velocidad",
-    Description = "Vuelve a la velocidad normal (16)",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-})
-
--- 4. FINALIZACIÓN
 Window:SelectTab(1)
