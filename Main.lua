@@ -28,7 +28,7 @@ Tabs.Main:AddSlider("WalkSpeed", {
     Title = "Velocidad Normal",
     Min = 16, Max = 200, Default = 16, Rounding = 0,
     Callback = function(Value)
-        if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
         end
     end
@@ -62,11 +62,12 @@ Tabs.Combat:AddDropdown("Key", {
 })
 
 local function CreateButton()
-    if game:GetService("CoreGui"):FindFirstChild("Sersoft_Fix") then
-        game:GetService("CoreGui")["Sersoft_Fix"]:Destroy()
+    local coreGui = game:GetService("CoreGui")
+    if coreGui:FindFirstChild("Sersoft_Fix") then
+        coreGui["Sersoft_Fix"]:Destroy()
     end
 
-    local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+    local sg = Instance.new("ScreenGui", coreGui)
     local btn = Instance.new("TextButton", sg)
     sg.Name = "Sersoft_Fix"
     sg.DisplayOrder = 999
@@ -85,10 +86,7 @@ local function CreateButton()
     btn.Draggable = true
 
     btn.MouseButton1Click:Connect(function()
-        local coreGui = game:GetService("CoreGui")
-        local playerGui = game.Players.LocalPlayer.PlayerGui
-        local mainGui = coreGui:FindFirstChild("Fluent") or playerGui:FindFirstChild("Fluent")
-        
+        local mainGui = coreGui:FindFirstChild("Fluent") or game.Players.LocalPlayer.PlayerGui:FindFirstChild("Fluent")
         if mainGui then
             mainGui.Enabled = not mainGui.Enabled
         else
@@ -113,7 +111,8 @@ end)
 
 task.spawn(function()
     local VIM = game:GetService("VirtualInputManager")
-    while task.wait() do 
+    while true do 
+        task.wait()
         if killAura then
             local char = game.Players.LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
@@ -131,7 +130,6 @@ task.spawn(function()
         end
         
         if spamAbilities then
-          
             for i = 1, 5 do
                 VIM:SendKeyEvent(true, Enum.KeyCode[selectedKey], false, game)
                 VIM:SendKeyEvent(false, Enum.KeyCode[selectedKey], false, game)
