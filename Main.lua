@@ -17,7 +17,7 @@ local Tabs = {
 }
 
 local bypassSpeed = false
-local speedValue = 1
+local speedValue = 0.8 -- Valor optimizado para evitar "Signal not found"
 local killAura = false
 local spamAbilities = false
 local selectedKey = "2"
@@ -35,21 +35,21 @@ Tabs.Main:AddSlider("WalkSpeed", {
 })
 
 Tabs.Main:AddToggle("Bypass", {
-    Title = "Bypass Speed (CFrame)",
+    Title = "Bypass Speed (Safe)",
     Default = false,
     Callback = function(Value) bypassSpeed = Value end
 })
 
-Tabs.Combat:AddSection("Ataque y VFX")
+Tabs.Combat:AddSection("Ataque (Anti-Signal Error)")
 
 Tabs.Combat:AddToggle("Killaura", {
-    Title = "Kill Aura (Hitbox Fix)",
+    Title = "Kill Aura (Legit Mode)",
     Default = false,
     Callback = function(Value) killAura = Value end
 })
 
 Tabs.Combat:AddToggle("Spam", {
-    Title = "Spam Abilities (VFX Sync)",
+    Title = "Spam Abilities (Smart)",
     Default = false,
     Callback = function(Value) spamAbilities = Value end
 })
@@ -103,6 +103,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
         local char = game.Players.LocalPlayer.Character
         local root = char and char:FindFirstChild("HumanoidRootPart")
         local hum = char and char:FindFirstChild("Humanoid")
+       
         if root and hum and hum.MoveDirection.Magnitude > 0 then
             root.CFrame = root.CFrame + (hum.MoveDirection * speedValue)
         end
@@ -111,7 +112,7 @@ end)
 
 task.spawn(function()
     local VIM = game:GetService("VirtualInputManager")
-    while task.wait(0.3) do
+    while task.wait(0.4) do 
         if killAura then
             local char = game.Players.LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
@@ -119,9 +120,11 @@ task.spawn(function()
                     local tHum = v:FindFirstChildOfClass("Humanoid")
                     local tRoot = v:FindFirstChild("HumanoidRootPart")
                     if tHum and tRoot and v.Name ~= game.Players.LocalPlayer.Name and tHum.Health > 0 then
-                        if (char.HumanoidRootPart.Position - tRoot.Position).Magnitude <= 8 then
+                  
+                        if (char.HumanoidRootPart.Position - tRoot.Position).Magnitude <= 7 then
                             local tool = char:FindFirstChildOfClass("Tool")
                             if tool then tool:Activate() end
+                            
                             
                             local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes") or game:GetService("ReplicatedStorage"):FindFirstChild("Events")
                             if remotes then
@@ -138,21 +141,14 @@ task.spawn(function()
         end
         
         if spamAbilities then
-            VIM:SendKeyEvent(true, Enum.KeyCode[selectedKey], false, game)
+            local char = game.Players.LocalPlayer.Character
+            local hum = char and char:FindFirstChild("Humanoid")
             
-            local restr = game:GetService("ReplicatedStorage")
-            local vfxRemotes = restr:FindFirstChild("Remotes") or restr:FindFirstChild("Events")
-            
-            if vfxRemotes then
-                for _, r in pairs(vfxRemotes:GetDescendants()) do
-                    if r:IsA("RemoteEvent") and (r.Name:find("VFX") or r.Name:find("Ability") or r.Name:find("Skill")) then
-                        r:FireServer()
-                    end
-                end
+            if hum and hum:GetState() ~= Enum.HumanoidStateType.Physics then
+                VIM:SendKeyEvent(true, Enum.KeyCode[selectedKey], false, game)
+                task.wait(0.05)
+                VIM:SendKeyEvent(false, Enum.KeyCode[selectedKey], false, game)
             end
-            
-            task.wait(0.1)
-            VIM:SendKeyEvent(false, Enum.KeyCode[selectedKey], false, game)
         end
     end
 end)
