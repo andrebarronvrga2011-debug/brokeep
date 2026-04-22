@@ -17,7 +17,7 @@ local Tabs = {
 }
 
 local bypassSpeed = false
-local speedValue = 0.5 
+local speedValue = 0.6
 local killAura = false
 local spamAbilities = false
 local selectedKey = "2"
@@ -35,27 +35,27 @@ Tabs.Main:AddSlider("WalkSpeed", {
 })
 
 Tabs.Main:AddToggle("Bypass", {
-    Title = "Bypass Speed (Anti-Signal)",
+    Title = "Bypass Speed (CFrame)",
     Default = false,
     Callback = function(Value) bypassSpeed = Value end
 })
 
-Tabs.Combat:AddSection("Combate (Bypass Real)")
+Tabs.Combat:AddSection("Exploit de Desconexión (Signal)")
 
 Tabs.Combat:AddToggle("Killaura", {
-    Title = "Kill Aura (Raycast Mode)",
+    Title = "Kill Aura (Hitbox)",
     Default = false,
     Callback = function(Value) killAura = Value end
 })
 
 Tabs.Combat:AddToggle("Spam", {
-    Title = "Spam Abilities (Smart)",
+    Title = "Forzar Signal Spam",
     Default = false,
     Callback = function(Value) spamAbilities = Value end
 })
 
 Tabs.Combat:AddDropdown("Key", {
-    Title = "Tecla",
+    Title = "Habilidad",
     Values = {"1", "2", "3", "4", "E", "R", "F"},
     Default = "2",
     Callback = function(Value) selectedKey = Value end
@@ -113,33 +113,17 @@ end)
 
 task.spawn(function()
     local VIM = game:GetService("VirtualInputManager")
-    while task.wait(0.5) do 
+    while task.wait() do 
         if killAura then
-            local player = game.Players.LocalPlayer
-            local char = player.Character
+            local char = game.Players.LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
                 for _, v in pairs(game.Workspace:GetChildren()) do
                     local tHum = v:FindFirstChildOfClass("Humanoid")
                     local tRoot = v:FindFirstChild("HumanoidRootPart")
-                    
-                    if tHum and tRoot and v.Name ~= player.Name and tHum.Health > 0 then
-                        local mag = (char.HumanoidRootPart.Position - tRoot.Position).Magnitude
-                        
-                        if mag <= 8 then
+                    if tHum and tRoot and v.Name ~= game.Players.LocalPlayer.Name and tHum.Health > 0 then
+                        if (char.HumanoidRootPart.Position - tRoot.Position).Magnitude <= 10 then
                             local tool = char:FindFirstChildOfClass("Tool")
-                            if tool then 
-                                tool:Activate() 
-                                task.wait(0.1)
-                            end
-                            
-                            local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes") or game:GetService("ReplicatedStorage"):FindFirstChild("Events")
-                            if remotes then
-                                for _, r in pairs(remotes:GetDescendants()) do
-                                    if r:IsA("RemoteEvent") and (r.Name:find("Hit") or r.Name:find("VFX") or r.Name:find("Attack")) then
-                                        r:FireServer(v, tRoot.CFrame)
-                                    end
-                                end
-                            end
+                            if tool then tool:Activate() end
                         end
                     end
                 end
@@ -147,10 +131,9 @@ task.spawn(function()
         end
         
         if spamAbilities then
-            local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-            if hum and hum:GetState() ~= Enum.HumanoidStateType.Physics then
+          
+            for i = 1, 5 do
                 VIM:SendKeyEvent(true, Enum.KeyCode[selectedKey], false, game)
-                task.wait(0.05)
                 VIM:SendKeyEvent(false, Enum.KeyCode[selectedKey], false, game)
             end
         end
