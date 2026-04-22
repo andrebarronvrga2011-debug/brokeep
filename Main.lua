@@ -109,9 +109,9 @@ end
 
 
 task.spawn(function()
-    while task.wait(0.1) do 
+    while task.wait(0.35) do 
         if killAuraActivo then
-            atacarCercano()
+            atacarCercano(10)
         end
     end
 end)
