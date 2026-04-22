@@ -1,74 +1,65 @@
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-local Sersoft = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local ToggleBtn = Instance.new("TextButton")
-local Title = Instance.new("TextLabel")
-local SpeedBtn = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner")
+-- 1. CONFIGURACIÓN DEL MENÚ (Identidad de Sersoft)
+local Window = Fluent:CreateWindow({
+    Title = "Sersoft | Professional Edition",
+    SubTitle = "by papita kawaii123",
+    TabWidth = 160, -- El ancho de la barra lateral como en la imagen
+    Size = UDim2.fromOffset(580, 460), -- Tamaño similar a la imagen
+    Acrylic = false, -- Desactiva la transparencia borrosa para un color sólido
+    Theme = "Dark", -- Tema oscuro
+    MinimizeKey = Enum.KeyCode.RightControl -- Tecla alternativa para minimizar
+})
 
+-- 2. BOTÓN FLOTANTE (Para abrir/cerrar)
+-- Fluent crea automáticamente un botón flotante pequeño para móviles y PC.
+-- Si prefieres usar una tecla, la configuramos arriba (por defecto es Right Control).
 
-Sersoft.Name = "Sersoft_Minimal"
-Sersoft.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-Sersoft.ResetOnSpawn = false
+-- 3. PESTAÑAS (La barra lateral lateral)
+-- Fluent incluye los iconos que ves en la imagen (Lucide Icons)
+local Tabs = {
+    Home = Window:AddTab({ Title = "Inicio", Icon = "home" }),
+    Main = Window:AddTab({ Title = "Principal", Icon = "box" }), -- Icono similar a la imagen
+    Automation = Window:AddTab({ Title = "Automatización", Icon = "zap" }),
+    Settings = Window:AddTab({ Title = "Ajustes", Icon = "settings" })
+}
 
+-- 4. CONTENIDO DE LA PESTAÑA "INICIO"
+Tabs.Home:AddParagraph({
+    Title = "Bienvenido a Sersoft",
+    Content = "Menú optimizado. Usa la barra lateral para navegar."
+})
 
-ToggleBtn.Name = "Toggle"
-ToggleBtn.Parent = Sersoft
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ToggleBtn.Position = UDim2.new(0.02, 0, 0.45, 0)
-ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
-ToggleBtn.Text = "S" -- Letra de Sersoft
-ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleBtn.TextSize = 20
-ToggleBtn.Font = Enum.Font.GothamBold
+-- 5. CONTENIDO DE LA PESTAÑA "PRINCIPAL" (Replicando los botones)
+Tabs.Main:AddSection("Mejoras de Jugador")
 
-local BtnCorner = Instance.new("UICorner")
-BtnCorner.CornerRadius = UDim.new(0, 10)
-BtnCorner.Parent = ToggleBtn
+Tabs.Main:AddSlider("Velocidad", {
+    Title = "Velocidad de Caminado",
+    Description = "Ajusta tu velocidad",
+    Default = 16,
+    Min = 16,
+    Max = 300,
+    Rounding = 0,
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end
+})
 
+-- 6. CONTENIDO DE LA PESTAÑA "AUTOMATIZACIÓN" (Replicando la lista)
+Tabs.Automation:AddSection("Automatizaciones Activas")
 
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = Sersoft
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
-MainFrame.Size = UDim2.new(0, 200, 0, 150)
-MainFrame.Visible = false -- Empieza cerrado
-MainFrame.BorderSizePixel = 0
+-- Ejemplo de un botón que simula el de la imagen
+Tabs.Automation:AddButton({
+    Title = "Recolección Automática",
+    Description = "Recoge objetos cercanos",
+    Callback = function()
+        print("Sersoft: Recolección automática iniciada.")
+        -- Aquí iría la lógica de tu script
+    end
+})
 
-local FrameCorner = Instance.new("UICorner")
-FrameCorner.Parent = MainFrame
+-- 7. INICIALIZACIÓN
+Window:SelectTab(1) -- Empieza en la pestaña Inicio
 
-
-Title.Parent = MainFrame
-Title.BackgroundTransparency = 1
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Font = Enum.Font.GothamBold
-Title.Text = "SERSOFT"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-
-
-SpeedBtn.Parent = MainFrame
-SpeedBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-SpeedBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
-SpeedBtn.Size = UDim2.new(0.8, 0, 0, 40)
-SpeedBtn.Font = Enum.Font.Gotham
-SpeedBtn.Text = "Velocidad: 100"
-SpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedBtn.TextSize = 14
-
-local SpeedCorner = Instance.new("UICorner")
-SpeedCorner.Parent = SpeedBtn
-
-
-ToggleBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
-
-SpeedBtn.MouseButton1Click:Connect(function()
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-end)
-
-
-MainFrame.Active = true
-MainFrame.Draggable = true
+-- Configuración del botón flotante para que sea un cuadro negro minimalista
+-- Fluent lo maneja por defecto, pero puedes configurarlo en los ajustes.
