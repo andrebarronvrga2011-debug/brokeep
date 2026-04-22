@@ -107,9 +107,9 @@ local function atacarCercano()
     end
 end
 
--- Bucle de ejecución
+
 task.spawn(function()
-    while task.wait(0.1) do -- Revisa 10 veces por segundo
+    while task.wait(0.1) do 
         if killAuraActivo then
             atacarCercano()
         end
@@ -122,5 +122,45 @@ Tab:AddToggle({
     Default = false,
     Callback = function(Value)
         killAuraActivo = Value
+    end
+})
+
+local spamActivo = false
+
+
+task.spawn(function()
+    while task.wait() do 
+        if spamActivo then
+           
+            local character = game.Players.LocalPlayer.Character
+            if character then
+                local tool = character:FindFirstChildOfClass("Tool")
+                if tool then
+                    tool:Activate()
+                end
+                
+                
+                local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+                if remotes then
+                    for _, remote in pairs(remotes:GetChildren()) do
+                        if remote:IsA("RemoteEvent") then
+                            remote:FireServer() 
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+
+Tab:AddToggle({
+    Name = "Ultimate Spam (Efectos)",
+    Default = false,
+    Callback = function(Value)
+        spamActivo = Value
+        if Value then
+            print("Sersoft: Spam de habilidades iniciado. ¡Cuidado con el lag!")
+        end
     end
 })
