@@ -78,3 +78,49 @@ Tab:AddToggle({
 		bypassSpeed = Value
 	end    
 })
+
+local killAuraActivo = false
+local rangoAura = 15
+
+
+local function atacarCercano()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+    for _, v in pairs(game.Workspace:GetChildren()) do
+       
+        local targetHum = v:FindFirstChildOfClass("Humanoid")
+        local targetRoot = v:FindFirstChild("HumanoidRootPart")
+        
+        if targetHum and targetRoot and v.Name ~= player.Name and targetHum.Health > 0 then
+            local distancia = (character.HumanoidRootPart.Position - targetRoot.Position).Magnitude
+            
+            if distancia <= rangoAura then
+              
+                local tool = character:FindFirstChildOfClass("Tool")
+                if tool then
+                    tool:Activate()
+                end
+            end
+        end
+    end
+end
+
+-- Bucle de ejecución
+task.spawn(function()
+    while task.wait(0.1) do -- Revisa 10 veces por segundo
+        if killAuraActivo then
+            atacarCercano()
+        end
+    end
+end)
+
+
+Tab:AddToggle({
+    Name = "Kill Aura (Sersoft Combat)",
+    Default = false,
+    Callback = function(Value)
+        killAuraActivo = Value
+    end
+})
